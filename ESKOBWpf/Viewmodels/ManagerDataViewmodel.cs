@@ -1,9 +1,5 @@
 ﻿using ESKOBWpf.Model;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace ESKOBWpf.Viewmodels
@@ -30,9 +26,9 @@ namespace ESKOBWpf.Viewmodels
         public async void Save(object parameter)
         {
             if (Manager.Id == 0)
-                await API.POST("/" + Manager.TenantReference + "/managers/create", Manager);
+                await API.POST("/" + Manager.TenantReference + "/managers", Manager);
             else
-                await API.POST("/" + Manager.TenantReference + "/managers/edit", Manager);
+                await API.PUT("/" + Manager.TenantReference + "/managers/" + Manager.Id, Manager);
             CloseAction();
         }
 

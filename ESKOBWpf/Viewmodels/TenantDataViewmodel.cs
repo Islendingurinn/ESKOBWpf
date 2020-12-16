@@ -26,9 +26,9 @@ namespace ESKOBWpf.Viewmodels
         public async void Save(object parameter)
         {
             if (Tenant.Id == 0)
-                await API.POST("/tenants/create", Tenant);
+                await API.POST("/tenants", Tenant);
             else
-                await API.POST("/managers/edit", Tenant);
+                await API.PUT("/tenants/" + Tenant.Id, Tenant);
             CloseAction();
         }
 

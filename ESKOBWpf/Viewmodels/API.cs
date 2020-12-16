@@ -1,7 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +14,6 @@ namespace ESKOBWpf.Viewmodels
         {
             using (var client = new HttpClient())
             {
-
                 client.BaseAddress = uri;
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(
@@ -25,18 +22,35 @@ namespace ESKOBWpf.Viewmodels
             }
         }
 
-        public static async Task<string> POST(string url, object obj)
+        public static async Task<HttpResponseMessage> POST(string url, object obj)
         {
             using (var client = new HttpClient())
             {
                 client.BaseAddress = uri;
                 var json = JsonConvert.SerializeObject(obj);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var result = await client.PostAsync(url, content);
-                string resultContent = await result.Content.ReadAsStringAsync();
+                return await client.PostAsync(url, content);
             }
+        }
 
-            return "error";
+        public static async Task<HttpResponseMessage> PUT(string url, object obj)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = uri;
+                var json = JsonConvert.SerializeObject(obj);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                return await client.PutAsync(url, content);
+            }
+        }
+
+        public static async Task<HttpResponseMessage> DELETE(string url)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = uri;
+                return await client.DeleteAsync(url);
+            }
         }
     }
 }

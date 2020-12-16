@@ -2,12 +2,9 @@
 using ESKOBWpf.View;
 using ESKOBWpf.Viewmodels;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace ESKOBWpf.Controller
@@ -42,6 +39,8 @@ namespace ESKOBWpf.Controller
         public ICommand CreateManagerCommand => new DelegateCommand(CreateManager);
         public ICommand EditManagerCommand => new DelegateCommand(EditManager);
         public ICommand DeleteManagerCommand => new DelegateCommand(DeleteManager);
+        public ICommand RefreshTenantsCommand => new DelegateCommand(UpdateData);
+        public ICommand RefreshManagersCommand => new DelegateCommand(SelectTenant);
 
         private bool _tenantControls = false;
         public bool ShowTenantControls
@@ -73,21 +72,19 @@ namespace ESKOBWpf.Controller
             }
         }
 
-        /*public ICommand TestCommand => new DelegateCommand(Test);
-        public void Test(object parameter)
-        {
-            Console.WriteLine(SelectedManager.ToString());
-        }*/
-
         public Logic()
         {
-            UpdateData();
+            UpdateData(null);
         }
 
         private void SelectTenant(object parameter)
         {
-            Tenant tenant = Tenants.Where(t => t.Id == ((int)parameter)).FirstOrDefault();
-            var response = API.GET("/" + tenant.Reference + "/managers/getall").Result;
+            int id = -1;
+            if (parameter == null) id = SelectedTenant.Id;
+            else id = (int)parameter;
+
+            Tenant tenant = Tenants.Where(t => t.Id == id).FirstOrDefault();
+            var response = API.GET("/" + tenant.Reference + "/managers").Result;
             if (response.IsSuccessStatusCode)
             {
                 string result = response.Content.ReadAsStringAsync().Result;
@@ -95,12 +92,9 @@ namespace ESKOBWpf.Controller
                 ManagerList = new ObservableCollection<Manager>(managers);
             }
 
-            ManagerList.Add(new Manager { Name = "Test" });
             SelectedTenant = tenant;
             ShowTenantControls = true;
             ShowManagerControls = false;
-            
-            Console.WriteLine(parameter);
         }
 
         public void CreateTenant(object parameter)
@@ -119,8 +113,11 @@ namespace ESKOBWpf.Controller
 
         public async void DeleteTenant(object parameter)
         {
-            await API.GET("/tenants/delete/" + SelectedTenant.Id);
-            UpdateData();
+            await API.DELETE("/tenants/" + SelectedTenant.Id);
+            SelectedTenant = null;
+            ShowTenantControls = false;
+            ShowManagerControls = false;
+            UpdateData(null);
         }
 
         public void CreateManager(object parameter)
@@ -142,13 +139,17 @@ namespace ESKOBWpf.Controller
 
         public async void DeleteManager(object parameter)
         {
-            await API.GET("/" + SelectedTenant.Reference + "/managers/delete/" + SelectedManager.Id);
+            await API.DELETE("/" + SelectedTenant.Reference + "/managers/" + SelectedManager.Id);
             SelectTenant(SelectedTenant.Id);
         }
 
-        public void UpdateData()
+        public void UpdateData(object parameter)
         {
-            var response = API.GET("/tenants/get").Result;
+            SelectedTenant = null;
+            ShowTenantControls = false;
+            ShowManagerControls = false;
+
+            var response = API.GET("/tenants").Result;
             if (response.IsSuccessStatusCode)
             {
                 string result = response.Content.ReadAsStringAsync().Result;
