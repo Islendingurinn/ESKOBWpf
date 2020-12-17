@@ -14,7 +14,6 @@ namespace ESKOBWpf.View
             DataContext = vm;
             if (vm.CloseAction == null)
                 vm.CloseAction = new Action(Close);
-            
         }
     }
 }

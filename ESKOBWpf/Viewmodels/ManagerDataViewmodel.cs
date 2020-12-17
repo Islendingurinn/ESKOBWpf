@@ -11,6 +11,7 @@ namespace ESKOBWpf.Viewmodels
 
         public ICommand CancelCommand => new DelegateCommand(Cancel);
         public ICommand SaveCommand => new DelegateCommand(Save);
+
         public Action CloseAction { get; set; }
 
         public ManagerDataViewmodel(Manager manager)
@@ -29,8 +30,8 @@ namespace ESKOBWpf.Viewmodels
                 await API.POST("/" + Manager.TenantReference + "/managers", Manager);
             else
                 await API.PUT("/" + Manager.TenantReference + "/managers/" + Manager.Id, Manager);
+
             CloseAction();
         }
-
     }
 }

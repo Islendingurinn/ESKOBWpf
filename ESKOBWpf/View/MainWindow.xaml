@@ -92,7 +92,10 @@
                       SelectionMode="Single" 
                       SelectedItem="{Binding SelectedManager}"
                       Style="{StaticResource ManagerList}"
-                      Visibility="{Binding Path=ShowTenantControls, Converter={StaticResource BoolToVis}}"></ListView>
+                      Visibility="{Binding Path=ShowTenantControls, Converter={StaticResource BoolToVis}}"
+                      ScrollViewer.VerticalScrollBarVisibility="Visible"
+                      ScrollViewer.CanContentScroll="True"
+                      MaxHeight="200"></ListView>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Command="{Binding DeleteManagerCommand}" 
                         Content="Delete Manager" 

@@ -14,8 +14,10 @@ namespace ESKOBWpf.Controller
         private ObservableCollection<Tenant> _tenants = new ObservableCollection<Tenant>();
         public ObservableCollection<Tenant> Tenants { get { return _tenants; } set { _tenants = value; Changed(); } }
 
+
         private ObservableCollection<Manager> _managers = new ObservableCollection<Manager>();
         public ObservableCollection<Manager> ManagerList { get { return _managers; } set { _managers = value; Changed(); } }
+
 
         private Manager _selectedManager;
         public Manager SelectedManager
@@ -41,6 +43,7 @@ namespace ESKOBWpf.Controller
         public ICommand DeleteManagerCommand => new DelegateCommand(DeleteManager);
         public ICommand RefreshTenantsCommand => new DelegateCommand(UpdateData);
         public ICommand RefreshManagersCommand => new DelegateCommand(SelectTenant);
+
 
         private bool _tenantControls = false;
         public bool ShowTenantControls
@@ -80,8 +83,10 @@ namespace ESKOBWpf.Controller
         private void SelectTenant(object parameter)
         {
             int id = -1;
-            if (parameter == null) id = SelectedTenant.Id;
-            else id = (int)parameter;
+            if (parameter == null) 
+                id = SelectedTenant.Id;
+            else 
+                id = (int)parameter;
 
             Tenant tenant = Tenants.Where(t => t.Id == id).FirstOrDefault();
             var response = API.GET("/" + tenant.Reference + "/managers").Result;
@@ -101,7 +106,6 @@ namespace ESKOBWpf.Controller
         {
             Tenant t = new Tenant();
             var mData = new TenantData(t);
-            
             mData.Show();
         }
 
@@ -122,9 +126,12 @@ namespace ESKOBWpf.Controller
 
         public void CreateManager(object parameter)
         {
-            Manager m = new Manager();
-            m.TenantId = SelectedTenant.Id;
-            m.TenantReference = SelectedTenant.Reference;
+            Manager m = new Manager
+            {
+                TenantId = SelectedTenant.Id,
+                TenantReference = SelectedTenant.Reference
+            };
+
             var mData = new ManagerData(m);
             mData.Show();
 
